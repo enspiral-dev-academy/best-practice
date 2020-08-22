@@ -58,7 +58,7 @@ describe("GET /api/v1/posts", () => {
         expect(res.body).toHaveLength(2);
         expect(res.body[0].name).toMatch("mocked post 1");
         expect(res.body[1].link).toMatch("https://mocked.link.com/2");
-        return res;
+        return null;
       });
   });
 });

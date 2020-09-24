@@ -1,6 +1,3 @@
-// disable false positive warning in eslint-plugin-security
-/* eslint-disable security/detect-non-literal-fs-filename */
-
 const { AUTHOR_ID_NOT_FOUND, AUTHOR_ID_NOT_PROVIDED } = require("../errors");
 
 const makePostEntry = require("./postEntry");

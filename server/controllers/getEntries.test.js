@@ -1,6 +1,3 @@
-// disable false positive warning in eslint-plugin-security
-/* eslint-disable security/detect-non-literal-fs-filename */
-
 const makeGetEntries = require("./getEntries");
 
 const mockEntries = [

@@ -1,35 +1,28 @@
 import React, { useEffect } from "react";
-import { connect } from "react-redux";
 
-import { fetchEntryById } from "../actions/entries";
+import { wrappedWith, entriesContext, entryContext } from "../wrappers";
 
-function EntryDetail(props) {
+export function EntryDetail({ entries, entry, retrieveEntryById, match }) {
+  const id = Number(match?.params?.id) || null;
+
+  const entryFromState =
+    entry?.id === id ? entry : entries.find((entry) => entry.id === id);
+
   useEffect(() => {
-    const { entry, match, fetchEntryById } = props;
-    if (!entry && match && match.params) {
-      fetchEntryById(Number(match.params.id));
+    if (!entryFromState && id) {
+      retrieveEntryById(id);
     }
-  });
+  }, []);
 
-  const { entry = {} } = props;
+  const displayEntry = entryFromState || {};
+
   return (
     <div data-testid="entry">
-      <h2>{entry.name}</h2>
-      <a href={entry.link}>{entry.link}</a>
-      <p>{entry.description}</p>
+      <h2>{displayEntry.name}</h2>
+      <a href={displayEntry.link}>{displayEntry.link}</a>
+      <p>{displayEntry.description}</p>
     </div>
   );
 }
 
-function mapStateToProps(state, ownProps) {
-  const id = Number(ownProps.match.params.id);
-  const fromState = state.entry && state.entry.id === id ? state.entry : null;
-  const fromList = state.entries.find((entry) => entry.id === id);
-  return {
-    entry: fromState || fromList,
-  };
-}
-
-const mapDispatchToProps = { fetchEntryById };
-
-export default connect(mapStateToProps, mapDispatchToProps)(EntryDetail);
+export default wrappedWith(entriesContext, entryContext)(EntryDetail);

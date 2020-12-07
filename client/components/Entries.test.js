@@ -1,23 +1,42 @@
 import React from "react";
-import { screen } from "@testing-library/react";
-import { renderWithRedux } from "../testing/utils";
+import { renderWithRouter } from "../testing/utils";
 import "@testing-library/jest-dom";
 
-import Entries from "./Entries";
-import { getEntries } from "../api";
+import { Entries } from "./Entries";
+
 import mockEntries from "../testing/mockEntries";
 
-jest.mock("../api", () => ({
-  getEntries: jest.fn(),
-}));
+test("renders entries page correctly when authenticated", () => {
+  const { asFragment } = renderWithRouter(
+    <Entries
+      authenticated={() => true}
+      entries={mockEntries}
+      retrieveEntries={() => {}}
+    />
+  );
+  expect(asFragment()).toMatchSnapshot();
+});
 
-test("<Entries> shows entries from API", async () => {
-  getEntries.mockImplementation(() => Promise.resolve(mockEntries));
+test("renders entries page correctly when not authenticated", () => {
+  const { asFragment } = renderWithRouter(
+    <Entries
+      authenticated={() => false}
+      retrieveEntries={() => {}}
+      entries={mockEntries}
+    />
+  );
+  expect(asFragment()).toMatchSnapshot();
+});
 
-  renderWithRedux(<Entries />, { initialState: { entries: mockEntries } });
-  const entries = await screen.findAllByTestId("entry");
-  expect(entries).toHaveLength(3);
-  expect(entries[1]).not.toHaveTextContent("1");
-  expect(entries[1]).toHaveTextContent("2");
-  expect(entries[1]).not.toHaveTextContent("3");
+test("useEffect calls retrieveEntries on mount", () => {
+  const retrieveEntries = jest.fn();
+  renderWithRouter(
+    <Entries
+      authenticated={() => false}
+      entries={mockEntries}
+      retrieveEntries={retrieveEntries}
+    />
+  );
+
+  expect(retrieveEntries).toHaveBeenCalled();
 });

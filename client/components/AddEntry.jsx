@@ -1,11 +1,20 @@
 import React, { useState } from "react";
-import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { saveEntry } from "../actions/entries";
-import { IfAuthenticated, IfNotAuthenticated } from "./Authenticated";
+import {
+  wrappedWith,
+  authentication,
+  entryContext,
+  userContext,
+} from "../wrappers";
 
-function AddEntry(props) {
+const formStyle = {
+  display: "flex",
+  flexDirection: "column",
+  maxWidth: "250px",
+};
+
+export function AddEntry({ authenticated, user, submitEntry }) {
   const [formData, setFormData] = useState({
     name: "",
     link: "",
@@ -18,31 +27,25 @@ function AddEntry(props) {
   };
 
   const handleAdd = () => {
-    return props
-      .saveEntry({
-        authorId: props.userId,
-        ...formData,
-      })
-      .then((saved) => {
-        props.history.push(`/entry/${saved.id}`);
-        return null;
-      });
+    const authorId = user.id;
+    submitEntry(authorId, formData);
   };
 
   const { name, link, description } = formData;
   return (
     <div data-testid="addentry">
       <h2>Add New Entry</h2>
-      <IfAuthenticated>
-        <div>
-          <div>Name:</div>
-          <input name="name" value={name} onChange={handleChange} />
+      {authenticated() ? (
+        <div style={formStyle}>
+          <label htmlFor="name">Name</label>
+          <input id="name" name="name" value={name} onChange={handleChange} />
 
-          <div>Link:</div>
-          <input name="link" value={link} onChange={handleChange} />
+          <label htmlFor="link">Link</label>
+          <input id="link" name="link" value={link} onChange={handleChange} />
 
-          <div>Description:</div>
+          <label htmlFor="description">Description</label>
           <textarea
+            id="description"
             name="description"
             value={description}
             onChange={handleChange}
@@ -55,20 +58,13 @@ function AddEntry(props) {
             </button>
           </div>
         </div>
-      </IfAuthenticated>
-      <IfNotAuthenticated>
+      ) : (
         <div>
           You must <Link to="/signin">sign in</Link> to add new entries.
         </div>
-      </IfNotAuthenticated>
+      )}
     </div>
   );
 }
 
-function mapStateToProps(state) {
-  return { userId: state.user.id };
-}
-
-const mapDispatchToProps = { saveEntry };
-
-export default connect(mapStateToProps, mapDispatchToProps)(AddEntry);
+export default wrappedWith(authentication, entryContext, userContext)(AddEntry);

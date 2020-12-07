@@ -1,40 +1,27 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { connect } from "react-redux";
 
-import EntryItem from "./EntryItem";
-import { fetchEntries } from "../actions/entries";
-import { IfAuthenticated } from "./Authenticated";
+import WrappedEntryItem from "./EntryItem";
+import WrappedWaitIndicator from "./WaitIndicator"
 
-function Entries(props) {
+import { wrappedWith, authentication, entriesContext } from "../wrappers";
+
+export function Entries({ authenticated, entries, retrieveEntries }) {
   useEffect(() => {
-    props.fetchEntries();
+    retrieveEntries();
   }, []);
-
-  const { entries } = props;
   return (
     <>
       <h2>Entries</h2>
-      <IfAuthenticated>
-        <Link to="/add">Add a entry</Link>
-      </IfAuthenticated>
+      {authenticated() && <Link to="/add">Add an entry</Link>}
+      <WrappedWaitIndicator />
       <ul>
         {entries.map((entry) => (
-          <EntryItem key={entry.id} entry={entry} />
+          <WrappedEntryItem key={entry.id} entryData={entry} />
         ))}
       </ul>
     </>
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    entries: state.entries,
-  };
-}
-
-const mapDispatchToProps = {
-  fetchEntries,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Entries);
+export default wrappedWith(authentication, entriesContext)(Entries);

@@ -1,20 +1,19 @@
 import React from "react";
-import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { receiveEntry } from "../actions/entries";
+import { wrappedWith, entryContext } from "../wrappers";
 
-const EntryItem = (props) => {
-  const { entry, receiveEntry } = props;
+export function EntryItem({ selectEntry, entryData }) {
   return (
     <li data-testid="entry">
-      <Link to={`/entry/${entry.id}`} onClick={() => receiveEntry(entry)}>
-        {entry.name}
+      <Link
+        to={`/entry/${entryData.id}`}
+        onClick={() => selectEntry(entryData)}
+      >
+        {entryData.name}
       </Link>
     </li>
   );
-};
+}
 
-const mapDispatchToProps = { receiveEntry };
-
-export default connect(null, mapDispatchToProps)(EntryItem);
+export default wrappedWith(entryContext)(EntryItem);

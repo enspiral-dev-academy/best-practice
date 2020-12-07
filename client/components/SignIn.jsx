@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { connect } from "react-redux";
-import { signIn, isAuthenticated } from "authenticare/client";
 
-import { signedIn } from "../actions/auth";
+import { wrappedWith, userContext } from "../wrappers";
 
-import config from "../config";
+const formStyle = {
+  display: "flex",
+  flexDirection: "column",
+  maxWidth: "250px",
+};
 
-function SignIn(props) {
+export function SignIn({ signInUser }) {
   const [userData, setUserData] = useState({
     username: "",
     password: "",
@@ -18,29 +20,26 @@ function SignIn(props) {
   };
 
   const handleClick = () => {
-    const { username, password } = userData;
-    return signIn({ username, password }, { baseUrl: config.baseApiUrl }).then(
-      (token) => {
-        if (isAuthenticated()) {
-          props.signedIn(token);
-          props.history.push("/");
-        }
-        return null;
-      }
-    );
+    signInUser(userData);
   };
 
   const { username, password } = userData;
   return (
     <>
       <h2>Sign in</h2>
-      <div>
-        <div>Username:</div>
-        <input name="username" value={username} onChange={handleChange} />
+      <div style={formStyle}>
+        <label htmlFor="username">Username</label>
+        <input
+          name="username"
+          id="username"
+          value={username}
+          onChange={handleChange}
+        />
 
-        <div>Password:</div>
+        <label htmlFor="password">Password</label>
         <input
           name="password"
+          id="password"
           type="password"
           value={password}
           onChange={handleChange}
@@ -54,6 +53,4 @@ function SignIn(props) {
   );
 }
 
-const mapDispatchToProps = { signedIn };
-
-export default connect(null, mapDispatchToProps)(SignIn);
+export default wrappedWith(userContext)(SignIn);

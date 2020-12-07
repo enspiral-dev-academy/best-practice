@@ -46,7 +46,6 @@
     "eda-frontend-deps": "^0.4.5"
   },
   "devDependencies": {
-    "npm-run-all": "^4.1.5",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.4.0",
     "eslint-config-prettier": "^6.11.0",
@@ -57,6 +56,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.20.5",
     "eslint-plugin-security": "^1.4.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "2.0.5"
   }
 }

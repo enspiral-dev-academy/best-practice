@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { connect } from "react-redux";
-import { register, isAuthenticated } from "authenticare/client";
 
-import { signedIn } from "../actions/auth";
+import { wrappedWith, userContext } from "../wrappers";
 
-import config from "../config";
+const formStyle = {
+  display: "flex",
+  flexDirection: "column",
+  maxWidth: "250px",
+};
 
-function Register(props) {
+export function Register({ registerUser }) {
   const [userData, setUserData] = useState({
     username: "",
     password: "",
@@ -18,30 +20,26 @@ function Register(props) {
   };
 
   const handleClick = () => {
-    const { username, password } = userData;
-    return register(
-      { username, password },
-      { baseUrl: config.baseApiUrl }
-    ).then((token) => {
-      if (isAuthenticated()) {
-        props.signedIn(token);
-        props.history.push("/");
-      }
-      return null;
-    });
+    registerUser(userData);
   };
 
   const { username, password } = userData;
   return (
     <>
       <h2>Register</h2>
-      <div>
-        <div>Username:</div>
-        <input name="username" value={username} onChange={handleChange} />
+      <div style={formStyle}>
+        <label htmlFor="username">Username</label>
+        <input
+          name="username"
+          id="username"
+          value={username}
+          onChange={handleChange}
+        />
 
-        <div>Password:</div>
+        <label htmlFor="password">Password</label>
         <input
           name="password"
+          id="password"
           type="password"
           value={password}
           onChange={handleChange}
@@ -55,6 +53,4 @@ function Register(props) {
   );
 }
 
-const mapDispatchToProps = { signedIn };
-
-export default connect(null, mapDispatchToProps)(Register);
+export default wrappedWith(userContext)(Register);
